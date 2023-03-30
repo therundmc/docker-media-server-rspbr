@@ -1,5 +1,5 @@
 ---
-version: "2"
+version: "3"
 services:
   plex:
     image: linuxserver/plex:latest
@@ -15,23 +15,24 @@ services:
     ports:
       - 32400:32400
     restart: unless-stopped
+    network_mode: "host"
 
-  # transmission:
-  #   image: linuxserver/transmission
-  #   container_name: transmission
+  # jellyfin:
+  #   image: jellyfin/jellyfin:latest
+  #   container_name: jellyfin
   #   environment:
   #     - PUID=1000
   #     - PGID=1000
-  #     - TZ=Europe/Paris
-  #     - TRANSMISSION_WEB_HOME=/combustion-release/
+  #     - TZ=Etc/UTC
+  #     #- JELLYFIN_PublishedServerUrl=192.168.0.5 #optional
   #   volumes:
-  #     - ~/docker-services/transmission/config:/config
-  #     - /mnt/mediastorage/data/torrents:/downloads:rw
-  #     - ~/docker-services/combustion-release:/combustion-release
+  #     - ~/docker-services/jellyfin/config:/config
+  #     - /mnt/mediastorage/data/media:/data/media
   #   ports:
-  #     - 9091:9091
-  #     - 49153:49153
-  #     - 49153:49153/udp
+  #     - 8096:8096
+  #     - 8920:8920 #optional
+  #     - 7359:7359/udp #optional
+  #     - 1900:1900/udp #optional
   #   restart: unless-stopped
 
   deluge:
