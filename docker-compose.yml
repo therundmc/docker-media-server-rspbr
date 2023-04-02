@@ -11,45 +11,44 @@ services:
       - PLEX_CLAIM="claim-7say3GUTACDQVRbPn1w8"
     volumes:
       - ~/docker-services/plex/config:/config
-      - /mnt/mediastorage/data/media:/data/media
+      - /mnt/media/data/media:/data/media
     ports:
       - 32400:32400
     restart: unless-stopped
     network_mode: "host"
 
-  # jellyfin:
-  #   image: jellyfin/jellyfin:latest
-  #   container_name: jellyfin
+  # deluge:
+  #   image: lscr.io/linuxserver/deluge:latest
+  #   container_name: deluge
   #   environment:
   #     - PUID=1000
   #     - PGID=1000
-  #     - TZ=Etc/UTC
-  #     #- JELLYFIN_PublishedServerUrl=192.168.0.5 #optional
+  #     - TZ=Europe/Paris
+  #     - DELUGE_LOGLEVEL=error #optional
   #   volumes:
-  #     - ~/docker-services/jellyfin/config:/config
-  #     - /mnt/mediastorage/data/media:/data/media
+  #     - ~/docker-services/deluge/config:/config
+  #     - /mnt/media/data/torrents:/downloads
   #   ports:
-  #     - 8096:8096
-  #     - 8920:8920 #optional
-  #     - 7359:7359/udp #optional
-  #     - 1900:1900/udp #optional
+  #     - 8112:8112
+  #     - 52522:52522
+  #     - 52522:52522/udp
   #   restart: unless-stopped
 
-  deluge:
-    image: lscr.io/linuxserver/deluge:latest
-    container_name: deluge
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
-      - DELUGE_LOGLEVEL=error #optional
+      - WEBUI_PORT=8080
     volumes:
-      - ~/docker-services/deluge/config:/config
-      - /mnt/mediastorage/data/torrents:/downloads
+      - ~/docker-services/qbittorrent/config:/config
+      - /mnt/media/data/torrents:/data/torrents
     ports:
-      - 8112:8112
-      - 52521:52521
-      - 52521:52521/udp
+      - 8080:8080
+      - 6881:6881
+      - 6881:6881/udp
     restart: unless-stopped
 
   jackett:
@@ -62,11 +61,10 @@ services:
       - RUN_OPTS=run options here #optional
     volumes:
       - ~/docker-services/jackett/config:/config
-      - /mnt/mediastorage/data/torrents:/downloads:rw
+      #- /mnt/media/data/torrents:/downloads
     ports:
       - 9117:9117
     restart: unless-stopped
-
 
   sonarr:
     image: linuxserver/sonarr
@@ -78,8 +76,8 @@ services:
       - UMASK_SET=022 #optional
     volumes:
       - ~/docker-services/sonarr/config:/config
-      - /mnt/mediastorage/data:/data
-      - /mnt/mediastorage/data/torrents:/downloads
+      - /mnt/media/data:/data
+      #- /mnt/media/data/torrents:/downloads
     ports:
       - 8989:8989
     restart: unless-stopped
@@ -93,22 +91,31 @@ services:
       - TZ=Europe/Paris
     volumes:
       - ~/docker-services/radarr/config:/config
-      - /mnt/mediastorage/data:/data
-      - /mnt/mediastorage/data/torrents:/downloads
+      - /mnt/media/data:/data
+      #- /mnt/media/data/torrents:/downloads
     ports:
       - 7878:7878
     restart: unless-stopped
 
-  ombi:
-    image: linuxserver/ombi
-    container_name: ombi
+  speedtest:
+    restart: unless-stopped
+    container_name: openspeedtest
+    ports:
+        - '3000:3000'
+        - '3001:3001'
+    image: openspeedtest/latest
+
+  heimdall:
+    image: lscr.io/linuxserver/heimdall:latest
+    container_name: heimdall
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Paris
-      - BASE_URL=/ombi #optional
     volumes:
-      - ~/docker-services/ombi/config:/config
+      - ~/docker-services/heimdall/config:/config
     ports:
-      - 3579:3579
+      - 80:80
+      - 443:443
     restart: unless-stopped
+
