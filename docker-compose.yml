@@ -8,7 +8,6 @@ services:
       - PUID=1000
       - PGID=1000
       - VERSION=docker
-      - PLEX_CLAIM="claim-7say3GUTACDQVRbPn1w8"
     volumes:
       - ~/docker-services/plex/config:/config
       - /mnt/media/data/media:/data/media
@@ -35,20 +34,20 @@ services:
   #   restart: unless-stopped
 
   qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:latest
+    image: lscr.io/linuxserver/qbittorrent:14.3.9
     container_name: qbittorrent
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Etc/UTC
+      - TZ=Europe/Zurich
       - WEBUI_PORT=8080
     volumes:
       - ~/docker-services/qbittorrent/config:/config
       - /mnt/media/data/torrents:/data/torrents
     ports:
       - 8080:8080
-      - 6881:6881
-      - 6881:6881/udp
+      - 54855:54855
+      - 54855:54855/udp
     restart: unless-stopped
 
   jackett:
@@ -57,7 +56,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Europe/Paris
+      - TZ=Europe/Zurich
       - RUN_OPTS=run options here #optional
     volumes:
       - ~/docker-services/jackett/config:/config
@@ -72,7 +71,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Europe/Paris
+      - TZ=Europe/Zurich
       - UMASK_SET=022 #optional
     volumes:
       - ~/docker-services/sonarr/config:/config
@@ -88,7 +87,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Europe/Paris
+      - TZ=Europe/Zurich
     volumes:
       - ~/docker-services/radarr/config:/config
       - /mnt/media/data:/data
@@ -111,7 +110,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Europe/Paris
+      - TZ=Europe/Zurich
     volumes:
       - ~/docker-services/heimdall/config:/config
     ports:
@@ -119,3 +118,11 @@ services:
       - 443:443
     restart: unless-stopped
 
+  metube:
+    image: ghcr.io/alexta69/metube
+    container_name: metube
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    volumes:
+      - /mnt/media/data/yt:/downloads
