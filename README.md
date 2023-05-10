@@ -1,5 +1,3 @@
-# docker-media-server-rspbr
-
 # Docker Media Server for Raspberry Pi
 
 ![Raspberry Pi with media server](raspberry-pi-media-server.png)
