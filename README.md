@@ -2,7 +2,7 @@
 
 # Docker Media Server for Raspberry Pi
 
-![Raspberry Pi with media server](raspberry-pi-media-server.jpg)
+![Raspberry Pi with media server](raspberry-pi-media-server.png)
 
 This repo contains a set of Docker Compose configuration files to set up a media server on a Raspberry Pi (or other Linux machine). The Docker containers included in this set of files allow for streaming of multimedia content from sources such as Plex, Sonarr, Radarr, Lidarr, and Jackett.
 
@@ -45,3 +45,7 @@ If you encounter any issues while using this media server setup, please open an 
 ## Contributing
 
 If you would like to contribute to this project, please fork the repo and submit a pull request with your changes.
+
+## Credit
+
+Image from https://pimylifeup.com/raspberry-pi-plex-server/
