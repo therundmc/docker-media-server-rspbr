@@ -1,0 +1,138 @@
+version: "3"
+services:
+
+  homarr:
+    image: ghcr.io/ajnart/homarr:latest
+    container_name: homarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+    volumes:
+      - ${DOCKER_CONFIG}/homarr/configs:/app/data/configs
+      - ${DOCKER_CONFIG}/homarr/icons:/app/public/icons
+    ports:
+      - "80:7575"
+
+  jackett:
+    image: linuxserver/jackett
+    container_name: jackett
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+      - RUN_OPTS=run options here #optional
+    volumes:
+      - ${DOCKER_CONFIG}/jackett/config:/config
+      #- /mnt/media/data/torrents:/downloads
+    ports:
+      - 9117:9117
+    restart: unless-stopped
+
+  sonarr:
+    image: linuxserver/sonarr
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+      - UMASK_SET=022 #optional
+    volumes:
+      - ${DOCKER_CONFIG}/sonarr/config:/config
+      #- /mnt/media/data:/data
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+
+  radarr:
+    image: linuxserver/radarr
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+    volumes:
+      - ${DOCKER_CONFIG}/radarr/config:/config
+      #- /mnt/media/data:/data
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+
+  speedtest:
+    image: openspeedtest/latest
+    container_name: openspeedtest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+    ports:
+    - '3000:3000'
+    - '3001:3001'
+    restart: unless-stopped
+
+  netdata:
+    image: netdata/netdata
+    container_name: netdata
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - apparmor:unconfined
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+    volumes:
+      - netdata_config:/etc/netdata
+      - netdata_data:/var/lib/netdata
+      - netdata_log:/var/log/netdata
+    ports:
+      - "19999:19999"
+    restart: unless-stopped
+
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    volumes:
+      - ${DOCKER_CONFIG}/gluetun/config:/config
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+      - VPN_SERVICE_PROVIDER=mullvad
+      - VPN_TYPE=wireguard
+      - WIREGUARD_PRIVATE_KEY=${MULLVAD_PRIVATE_KEY}
+      - WIREGUARD_ADDRESSES=${MULLVAD_PRIVATE_ADDR}
+      - SERVER_CITIES=Oslo
+      - OWNED_ONLY=yes
+      - VPN_ENDPOINT_PORT=51820
+      - FIREWALL_VPN_INPUT_PORTS=${MULLVAD_INPUT_PORTS}
+      - FIREWALL_OUTBOUND_SUBNETS=10.0.0.0/24
+      - DNS_ADDRESS=10.64.0.1
+    ports:
+      - 8888:8888/tcp
+      - 8388:8388/tcp
+      - 8388:8388/udp
+      - 8080:8080/tcp
+    restart: unless-stopped
+
+  qbittorrent:
+    image: linuxserver/qbittorrent
+    container_name: qbittorrent
+    network_mode: container:gluetun
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+    volumes:
+      - ${DOCKER_CONFIG}/qbittorrent/config:/config
+      - /media/hdd1/downloads:/downloads
+    restart: unless-stopped
+
+volumes:
+  netdata_config:
+  netdata_data:
+  netdata_log:
