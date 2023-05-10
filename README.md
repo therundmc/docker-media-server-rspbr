@@ -24,13 +24,18 @@ This repo contains a set of Docker Compose configuration files to set up a media
 ## Installation
 
 1. Clone this repo to your Raspberry Pi or Linux machine.
-2. Modify the configuration files to suit your needs.
-3. Run `docker-compose up -d` from the root directory of the repo to start the containers.
-4. Access the media server via the URLs of the various components (e.g. http://localhost:32400/web for Plex).
+2. Create a .env file at the root of the directory and add any necessary environment variables, such as ${TZ}.
+3. Modify the configuration files to suit your needs.
+4. Run `docker-compose up -d` from the root directory of the repo to start the containers.
+5. Access the media server via the URLs of the various components (e.g. http://localhost:32400/web for Plex).
 
 ## Configuration
 
 Each container included in this repo has its own configuration file that can be edited to customize its behavior. These files are located in the `config` directory of the repo.
+
+## Docker Images
+
+A complete list of all Docker images used in this media server setup, along with their respective documentation, can be found in the [Wiki](https://github.com/therundmc/docker-media-server-rspbr/wiki) of this repo.
 
 ## Usage
 
@@ -43,6 +48,7 @@ If you encounter any issues while using this media server setup, please open an 
 ## Contributing
 
 If you would like to contribute to this project, please fork the repo and submit a pull request with your changes.
+
 
 ## Credit
 
