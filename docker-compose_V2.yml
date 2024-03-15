@@ -1,18 +1,40 @@
 version: "3"
 services:
 
-  homarr:
-    image: ghcr.io/ajnart/homarr:latest
-    container_name: homarr
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=${TZ}
     volumes:
-      - ${DOCKER_CONFIG}/homarr/configs:/app/data/configs
-      - ${DOCKER_CONFIG}/homarr/icons:/app/public/icons
+      - ${DOCKER_CACHE}/jellyfin/config:/config
+      - ${DOCKER_FILES}/data/media:/data/media
     ports:
-      - "80:7575"
+      - 8096:8096
+      - 8920:8920 #optional
+      - 7359:7359/udp #optional
+      - 1900:1900/udp #optional
+    restart: unless-stopped
+    network_mode: "host"
+
+  plex:
+    image: linuxserver/plex:latest
+    container_name: plex
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+      - PLEX_CLAIM=claim-xNT3ojW2XgBX-ftEq3uV
+      - VERSION=docker
+    volumes:
+      - ${DOCKER_CACHE}/plex/config:/config
+      - ${DOCKER_FILES}/data/media:/data/media
+    ports:
+      - 32400:32400
+    restart: unless-stopped
+    network_mode: "host"
 
   jackett:
     image: linuxserver/jackett
@@ -24,9 +46,23 @@ services:
       - RUN_OPTS=run options here #optional
     volumes:
       - ${DOCKER_CONFIG}/jackett/config:/config
-      #- /mnt/media/data/torrents:/downloads
     ports:
       - 9117:9117
+    restart: unless-stopped
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+    volumes:
+      - ${DOCKER_CONFIG}/bazarr/config:/config
+      - ${DOCKER_FILES}/data/media/movies:/movies
+      - ${DOCKER_FILES}/data/media/tv:/tv
+    ports:
+      - 6767:6767
     restart: unless-stopped
 
   sonarr:
@@ -39,7 +75,7 @@ services:
       - UMASK_SET=022 #optional
     volumes:
       - ${DOCKER_CONFIG}/sonarr/config:/config
-      #- /mnt/media/data:/data
+      - ${DOCKER_FILES}/data:/data
     ports:
       - 8989:8989
     restart: unless-stopped
@@ -53,7 +89,7 @@ services:
       - TZ=${TZ}
     volumes:
       - ${DOCKER_CONFIG}/radarr/config:/config
-      #- /mnt/media/data:/data
+      - ${DOCKER_FILES}/data:/data
     ports:
       - 7878:7878
     restart: unless-stopped
@@ -129,8 +165,23 @@ services:
       - TZ=${TZ}
     volumes:
       - ${DOCKER_CONFIG}/qbittorrent/config:/config
-      - /media/hdd1/downloads:/downloads
+      - ${DOCKER_FILES}/data/downloads:/data/downloads
     restart: unless-stopped
+
+  homarr:
+    image: ghcr.io/ajnart/homarr:latest
+    container_name: homarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+    volumes:
+      - ${DOCKER_CONFIG}/homarr/configs:/app/data/configs
+      - ${DOCKER_CONFIG}/homarr/data:/data
+      - ${DOCKER_CONFIG}/homarr/icons:/app/public/icons
+    ports:
+      - "80:7575"
+    restart: always
 
 volumes:
   netdata_config:
